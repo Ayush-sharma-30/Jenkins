@@ -49,5 +49,7 @@ async def trigger_build(trigger_request: TriggerRequest):
 async def task(config):
     async with httpx.AsyncClient(verify=False) as client:
         tasks = [request(client, config=config) for i in range(100)]
-        return await asyncio.gather(*tasks)
+        result =  await asyncio.gather(*tasks)
+        print("result",result)
+        return result
         
