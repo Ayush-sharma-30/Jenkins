@@ -5,8 +5,10 @@ import asyncio
 
 app = FastAPI()
 
+
 class TriggerRequest(BaseModel):
     text: str
+
 
 class Config:
     url = "https://jenkins.zwayam.com/job/"
@@ -25,25 +27,27 @@ async def request(client: httpx.AsyncClient, config: Config):
             "Content-Type": "application/json"
         }
     )
-    if response.status_code==201:
+    if response.status_code == 201:
         return 1
     return 0
+
 
 @app.post("/trigger_build/")
 async def trigger_build(trigger_request: TriggerRequest):
     config = Config()
     config.url = config.url+trigger_request.text+"/build/"
-    await task(config=config)
+    result =  await task(config=config)
+    if result == 1:
+        return {
+            "msg": "successfully triggered build",
+        }
+    return {
+        "msg": "failed to trigger build"
+    }
 
 
 async def task(config):
     async with httpx.AsyncClient(verify=False) as client:
-        tasks = [request(client,config=config) for i in range(100)]
-        result = await asyncio.gather(*tasks)
-        if result == 1:
-            return {
-                "msg": "successfully triggered build",
-            }
-        return {
-            "msg": "failed to trigger build"
-        }
+        tasks = [request(client, config=config) for i in range(100)]
+        return await asyncio.gather(*tasks)
+        
