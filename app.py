@@ -23,7 +23,7 @@ async def request(client: httpx.AsyncClient, config: Config):
     )
     return response.text
 
-@app.post("/trigger_build")
+@app.post("/trigger_build/")
 async def trigger_build(trigger_request: TriggerRequest):
     config = Config()
     config.url = config.url+trigger_request.text+"/build/"
