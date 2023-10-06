@@ -25,7 +25,9 @@ async def request(client: httpx.AsyncClient, config: Config):
             "Content-Type": "application/json"
         }
     )
-    return response.text
+    if response.status_code==201:
+        return 1
+    return 0
 
 @app.post("/trigger_build/")
 async def trigger_build(trigger_request: TriggerRequest):
@@ -38,4 +40,10 @@ async def task(config):
     async with httpx.AsyncClient(verify=False) as client:
         tasks = [request(client,config=config) for i in range(100)]
         result = await asyncio.gather(*tasks)
-        print(result)
+        if result == 1:
+            return {
+                "msg": "successfully triggered build",
+            }
+        return {
+            "msg": "failed to trigger build"
+        }
