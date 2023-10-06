@@ -19,6 +19,9 @@ async def request(client: httpx.AsyncClient, config: Config):
         url=config.url,
         data={
             "token": config.token
+        },
+        headers={
+            "Authorization": "Basic " + config.auth_token,
         }
     )
     return response.text
