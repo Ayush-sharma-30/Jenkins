@@ -22,6 +22,7 @@ async def request(client: httpx.AsyncClient, config: Config):
         },
         headers={
             "Authorization": "Basic " + config.auth_token,
+            "Content-Type": "application/json"
         }
     )
     return response.text
@@ -34,7 +35,7 @@ async def trigger_build(trigger_request: TriggerRequest):
 
 
 async def task(config):
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(verify=False) as client:
         tasks = [request(client,config=config) for i in range(100)]
         result = await asyncio.gather(*tasks)
         print(result)
