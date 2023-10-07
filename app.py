@@ -50,6 +50,7 @@ async def task(config):
     async with httpx.AsyncClient(verify=False) as client:
         tasks = [request(client, config=config) for i in range(100)]
         result =  await asyncio.gather(*tasks)
-        print("result",result)
-        return result
+        if 1 in result:
+            return 1
+        return 0
         
